@@ -1,0 +1,9 @@
+# Private information
+.env
+
+# Jupyter notebook temporary files
+*.ipynb_checkpoints/
+
+# Python temporary files
+*.pyc
+__pycache__/
