@@ -1,5 +1,6 @@
 import os
 import praw
+import openai
 import threading
 from urllib.parse import urlparse
 from dotenv import load_dotenv
@@ -22,6 +23,11 @@ class EthTraderAI:
         self.subreddit = self.reddit.subreddit(subreddit)
 
 
+    def check_content_moderation(self, content):
+        response = openai.Moderation.create(input=content)
+        return response["results"][0]['flagged']
+
+
     def extract_context(self, comment, depth=5):
         context = []
         current_comment = comment
@@ -39,10 +45,11 @@ class EthTraderAI:
     
     def listen_to_comments(self):
         for comment in self.subreddit.stream.comments(skip_existing=True):
-            # print(f"New comment: [{comment.author.name}] {comment.body}")
-            parent_comments = self.extract_parent_comments(comment)
-            for parent_comment in parent_comments:
-                print(parent_comment)
+            parent_comments = self.extract_context(comment)
+            full_context = '\n'.join(parent_comments)
+            flagged = self.check_content_moderation(full_context)
+            if not flagged:
+                print(full_context)
 
 
     def listen_to_posts(self):
@@ -59,6 +66,9 @@ class EthTraderAI:
 
 
 if __name__ == '__main__':
+
+    # Load OpenAI key
+    openai.api_key = os.getenv("OPENAI_KEY")
 
     # Load Reddit keys
     CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
