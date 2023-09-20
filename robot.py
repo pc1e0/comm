@@ -21,10 +21,28 @@ class EthTraderAI:
         )
         self.subreddit = self.reddit.subreddit(subreddit)
 
+
+    def extract_context(self, comment, depth=5):
+        context = []
+        current_comment = comment
+        for _ in range(depth):
+            if isinstance(current_comment, praw.models.Comment):
+                context.insert(0, f"{current_comment.id}: comment | {current_comment.author.name}: {current_comment.body}")
+            elif isinstance(current_comment, praw.models.Submission):
+                context.insert(0, f"{current_comment.id}: post | {current_comment.author.name}: {current_comment.title}")
+            try:
+                current_comment = current_comment.parent()
+            except AttributeError:
+                break  # We reached the top
+        return context
+
     
     def listen_to_comments(self):
         for comment in self.subreddit.stream.comments(skip_existing=True):
-            print(f"New comment: [{comment.author.name}] {comment.body}")
+            # print(f"New comment: [{comment.author.name}] {comment.body}")
+            parent_comments = self.extract_parent_comments(comment)
+            for parent_comment in parent_comments:
+                print(parent_comment)
 
 
     def listen_to_posts(self):
