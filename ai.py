@@ -48,7 +48,7 @@ class ChatGPT:
 
         response = self.submit(
             system=config.classifier_instruction,
-            prompt=content,
+            prompt=f"Reddit conversation:\n\n{content}",
             max_tokens=64
         )
 
