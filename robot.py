@@ -11,7 +11,15 @@ load_dotenv()
 class EthTraderAI:
 
 
-    def __init__(self, client_id, client_secret, username, password, user_agent, subreddit):
+    def __init__(self):
+
+        openai.api_key = os.getenv("OPENAI_KEY")
+        client_id = os.getenv("REDDIT_CLIENT_ID")
+        client_secret = os.getenv("REDDIT_SECRET")
+        username = os.getenv('REDDIT_USERNAME')
+        password = os.getenv('REDDIT_PASSWORD')
+        user_agent = os.getenv('REDDIT_USER_AGENT')
+        subreddit = os.getenv('REDDIT_SUBREDDIT')
 
         self.reddit = praw.Reddit(
             client_id=client_id,
@@ -67,19 +75,8 @@ class EthTraderAI:
 
 if __name__ == '__main__':
 
-    # Load OpenAI key
-    openai.api_key = os.getenv("OPENAI_KEY")
-
-    # Load Reddit keys
-    CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
-    CLIENT_SECRET = os.getenv("REDDIT_SECRET")
-    USERNAME = os.getenv('REDDIT_USERNAME')
-    PASSWORD = os.getenv('REDDIT_PASSWORD')
-    USER_AGENT = os.getenv('REDDIT_USER_AGENT')
-    SUBREDDIT = os.getenv('REDDIT_SUBREDDIT')
-
     # Initialize robot
-    robot = EthTraderAI(CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD, USER_AGENT, SUBREDDIT)
+    robot = EthTraderAI()
 
     # Start listening to the EthTrader subreddit
     robot.listen_to_subreddit()
