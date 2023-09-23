@@ -19,6 +19,51 @@ class Database:
             additional_headers={"X-OpenAI-Api-Key": openai_key}
         )
 
+    
+    def write_config(self, name, content):
+
+        data_object = {
+            "name": name,
+            "content": content
+        }
+
+        try:
+            self.client.data_object.create(
+                data_object=data_object,
+                class_name="System"
+            )
+        
+        except Exception as e:
+            raise RuntimeError("Error when creating Weaviate data object.") from e
+
+
+    def read_config(self, name):
+
+        query = """\
+        {
+            Get {
+                System (
+                    where: {
+                        path: ["name"]
+                        operator: Equal
+                        valueText: "%s"
+                    }
+                    limit: 1
+                )
+                {
+                    content
+                }
+            }
+        }
+        """ % name
+        
+        try:
+            result = self.client.query.raw(query)
+            return result["data"]["Get"]["System"][0]["content"]
+
+        except Exception as e:
+            raise RuntimeError("Error when reading Weaviate data object.") from e
+
 
     def create_schema(self, update=False):
 
@@ -27,7 +72,7 @@ class Database:
                 self.client.schema.delete_all()
                 print("Schema deleted")
             except Exception as e:
-                raise RuntimeError("Error when deleting schema.") from e
+                raise RuntimeError("Error when deleting Weaviate schema.") from e
 
         user_class = {
             "class": "User",
@@ -100,7 +145,7 @@ class Database:
             ]})
             print("Schema created")
         except Exception as e:
-            raise RuntimeError("Error when creating schema.") from e
+            raise RuntimeError("Error when creating Weaviate schema.") from e
 
 
 if __name__ == '__main__':
