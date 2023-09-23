@@ -65,7 +65,14 @@ class EthTraderAI:
             flagged = self.ai.moderate(full_context)
 
             if not flagged:
+
+                print("Conversation:")
                 print(full_context)
+
+                classification_result = self.ai.classify(full_context)
+
+                print("Classification Result:")
+                print(classification_result)
 
 
     def listen_to_posts(self):
@@ -75,7 +82,7 @@ class EthTraderAI:
 
 
     def listen_to_subreddit(self):
-        
+
         comment_thread = threading.Thread(target=self.listen_to_comments)
         post_thread = threading.Thread(target=self.listen_to_posts)
 
