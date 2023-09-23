@@ -1,5 +1,5 @@
-from db import Database
-db = Database()
+from db import Weaviate
+db = Weaviate()
 
 openai_model = db.read_config(name="openai_model")
 classifier_instruction = db.read_config(name="classifier_instruction")

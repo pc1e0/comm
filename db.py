@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Database:
+class Weaviate:
 
     def __init__(self):
 
@@ -150,5 +150,5 @@ class Database:
 
 if __name__ == '__main__':
 
-    db = Database()
+    db = Weaviate()
     db.create_schema(update=True)
