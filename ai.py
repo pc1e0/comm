@@ -24,7 +24,7 @@ class ChatGPT:
             raise RuntimeError("Error when moderating content for ChatGPT.") from e
     
 
-    def submit(self, chat=None, system=None, prompt=None, max_tokens=512):
+    def submit(self, chat=None, system=None, prompt=None, max_tokens=512, temperature=1):
 
         if not chat:
             chat = [
@@ -36,7 +36,8 @@ class ChatGPT:
             response = openai.ChatCompletion.create(
                 model=config.openai_model,
                 messages=chat,
-                max_tokens=max_tokens
+                max_tokens=max_tokens,
+                temperature=temperature
             )
             return response["choices"][0]["message"]["content"]
         
@@ -54,11 +55,12 @@ class ChatGPT:
 
         response = self.submit(
             chat=setup,
-            max_tokens=64
+            max_tokens=64,
+            temperature=0
         )
 
         # The required structure of the response
-        required_keys = {"need_assistance", "category"}
+        required_keys = {"seeks_help", "category"}
 
         # Load the response string as JSON
         try:
@@ -71,8 +73,8 @@ class ChatGPT:
             raise ValueError("The ChatGPT JSON response doesn't have expected keys.")
         
         # Check if 'need_assistance' is of boolean type
-        if not isinstance(response_dict["need_assistance"], bool):
-            raise ValueError("The ChatGPT JSON's 'need_assistance' is not boolean.")
+        if not isinstance(response_dict["seeks_help"], bool):
+            raise ValueError("The ChatGPT JSON's 'seeks_help' is not boolean.")
         
         # Check if 'category' is of string type
         if not isinstance(response_dict["category"], str):
