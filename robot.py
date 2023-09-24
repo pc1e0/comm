@@ -69,7 +69,7 @@ class EthTraderAI:
                 print("Conversation:")
                 print(full_context)
 
-                classification_result = self.ai.classify(comment, full_context)
+                classification_result = self.ai.classify(comment.body, full_context)
 
                 print("Classification Result:")
                 print(classification_result)
