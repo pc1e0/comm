@@ -44,11 +44,16 @@ class ChatGPT:
             raise RuntimeError("Error when getting chat response from ChatGPT.") from e
     
 
-    def classify(self, content):
+    def classify(self, inquiry, context):
+
+        setup = [
+            {"role": "system", "content": config.classifier_instruction},
+            {"role": "user", "content": f"Context:\n\n{context}"},
+            {"role": "user", "content": f"User inquiry:\n\n{inquiry}"}
+        ]
 
         response = self.submit(
-            system=config.classifier_instruction,
-            prompt=f"Reddit conversation:\n\n{content}",
+            chat=setup,
             max_tokens=64
         )
 
