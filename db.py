@@ -148,7 +148,7 @@ class Weaviate:
             raise RuntimeError("Error when creating Weaviate schema.") from e
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     db = Weaviate()
     db.create_schema(update=True)

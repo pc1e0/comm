@@ -18,7 +18,7 @@ class ChatGPT:
 
         try:
             response = openai.Moderation.create(input=content)
-            return response["results"][0]['flagged']
+            return response["results"][0]["flagged"]
         
         except Exception as e:
             raise RuntimeError("Error when moderating content for ChatGPT.") from e

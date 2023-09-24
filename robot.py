@@ -16,10 +16,10 @@ class EthTraderAI:
 
         client_id = os.getenv("REDDIT_CLIENT_ID")
         client_secret = os.getenv("REDDIT_SECRET")
-        username = os.getenv('REDDIT_USERNAME')
-        password = os.getenv('REDDIT_PASSWORD')
-        user_agent = os.getenv('REDDIT_USER_AGENT')
-        subreddit = os.getenv('REDDIT_SUBREDDIT')
+        username = os.getenv("REDDIT_USERNAME")
+        password = os.getenv("REDDIT_PASSWORD")
+        user_agent = os.getenv("REDDIT_USER_AGENT")
+        subreddit = os.getenv("REDDIT_SUBREDDIT")
 
         self.reddit = praw.Reddit(
             client_id=client_id,
@@ -61,7 +61,7 @@ class EthTraderAI:
         for comment in self.subreddit.stream.comments(skip_existing=True):
 
             parent_comments = self.extract_context(comment)
-            full_context = '\n'.join(parent_comments)
+            full_context = "\n".join(parent_comments)
             flagged = self.ai.moderate(full_context)
 
             if not flagged:
@@ -90,7 +90,7 @@ class EthTraderAI:
         post_thread.start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Initialize robot
     robot = EthTraderAI()
