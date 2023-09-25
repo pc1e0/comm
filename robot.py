@@ -81,11 +81,13 @@ class EthTraderAI:
         
         # If the parent is a post, fetch the author, title, and selftext of the parent post
         elif isinstance(parent, praw.models.Submission):
-            parent_content = f"A Reddit [post]({parent_source}) by u/{parent_author}:\n\n#{parent.title}\n\n{parent.selftext}"
+            parent_content = f"A Reddit [post]({parent_source}) by u/{parent_author}:\n\n# {parent.title}\n\n{parent.selftext}"
             parent_category = "Reddit post"
         
         # Summarize parent content
         summarized_content = self.ai.summarize(parent_content)
+
+        # Store parent content
         self.db.write_factoid(
             content=parent_content,
             summary=summarized_content,
