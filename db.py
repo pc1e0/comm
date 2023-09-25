@@ -20,6 +20,28 @@ class Weaviate:
         )
 
     
+    def write_factoid(self, content, summary, author, source, category, suggested_by, review_status):
+
+        data_object = {
+            "content": content,
+            "summary": summary,
+            "author": author,
+            "source": source,
+            "category": category,
+            "suggested_by": suggested_by,
+            "review_status": review_status
+        }
+
+        try:
+            self.client.data_object.create(
+                data_object=data_object,
+                class_name="Factoid"
+            )
+        
+        except Exception as e:
+            raise RuntimeError("Error when creating Weaviate Factoid data object.") from e
+
+    
     def write_config(self, name, content):
 
         data_object = {
@@ -34,7 +56,7 @@ class Weaviate:
             )
         
         except Exception as e:
-            raise RuntimeError("Error when creating Weaviate data object.") from e
+            raise RuntimeError("Error when creating Weaviate System data object.") from e
 
 
     def read_config(self, name):
