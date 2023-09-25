@@ -39,7 +39,42 @@ class Weaviate:
             )
         
         except Exception as e:
-            raise RuntimeError("Error when creating Weaviate Factoid data object.") from e
+            raise RuntimeError("Error when writing Weaviate Factoid data object.") from e
+    
+
+    def find_factoids(self, hypothetical_answer):
+
+        query = """\
+        {
+            Get {
+                Factoid (
+                    nearText: {
+                        concepts: ["%s"]
+                    }
+                    where: {
+                        path: ["review_status"]
+                        operator: Equal
+                        valueText: "Approved"
+                    }
+                    limit: 5
+                ) {
+                    summary
+                    author
+                    source
+                    _additional {
+                        distance
+                    }
+                }
+            }
+        }
+        """ % hypothetical_answer
+
+        try:
+            result = self.client.query.raw(query)
+            return result["data"]["Get"]["Factoid"]
+
+        except Exception as e:
+            raise RuntimeError("Error when finding Weaviate Factoid data objects.") from e
 
     
     def write_config(self, name, content):
@@ -56,7 +91,7 @@ class Weaviate:
             )
         
         except Exception as e:
-            raise RuntimeError("Error when creating Weaviate System data object.") from e
+            raise RuntimeError("Error when writing Weaviate System data object.") from e
 
 
     def read_config(self, name):
@@ -84,7 +119,7 @@ class Weaviate:
             return result["data"]["Get"]["System"][0]["content"]
 
         except Exception as e:
-            raise RuntimeError("Error when reading Weaviate data object.") from e
+            raise RuntimeError("Error when reading Weaviate System data object.") from e
 
 
     def create_schema(self, update=False):
