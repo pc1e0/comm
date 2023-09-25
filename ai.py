@@ -81,3 +81,18 @@ class ChatGPT:
             raise ValueError("The ChatGPT JSON's 'category' is not string.")
 
         return response_dict
+    
+
+    def summarize(self, content):
+        
+        setup = [
+            {"role": "system", "content": config.summarizer_instruction},
+            {"role": "user", "content": f"Content:\n\n{content}"}
+        ]
+
+        response = self.submit(
+            chat=setup,
+            max_tokens=512
+        )
+
+        return response
