@@ -54,25 +54,71 @@ class EthTraderAI:
                 break  # We reached the top
 
         return context
+    
+
+    def handle_learn_this(self, comment):
+
+        # Who submitted
+        suggested_by = comment.author.name if comment.author else "Unknown"
+        review_status = "Approved" if suggested_by == "pc1e0" else "Pending"
+
+        # Get the parent of the comment which contains "!learn this"
+        parent = comment.parent()
+
+        # Retrieve parent's author
+        parent_author = parent.author.name if parent.author else "Unknown"
+
+        # Retrieve parent's URL
+        parent_source = f"https://www.reddit.com{parent.permalink}"
+        
+        # Initialize the content variable
+        parent_content = ""
+
+        # If the parent is a comment, fetch the author and body of the parent comment
+        if isinstance(parent, praw.models.Comment):
+            parent_content = f"A Reddit [comment]({parent_source}) by u/{parent_author}:\n\n{parent.body}"
+            parent_category = "Reddit comment"
+        
+        # If the parent is a post, fetch the author, title, and selftext of the parent post
+        elif isinstance(parent, praw.models.Submission):
+            parent_content = f"A Reddit [post]({parent_source}) by u/{parent_author}:\n\n#{parent.title}\n\n{parent.selftext}"
+            parent_category = "Reddit post"
+        
+        # Summarize parent content
+        summarized_content = self.ai.summarize(parent_content)
+        self.db.write_factoid(
+            content=parent_content,
+            summary=summarized_content,
+            author=parent_author,
+            source=parent_source,
+            category=parent_category,
+            suggested_by=suggested_by,
+            review_status=review_status
+        )
 
     
     def listen_to_comments(self):
 
         for comment in self.subreddit.stream.comments(skip_existing=True):
 
-            parent_comments = self.extract_context(comment)
-            full_context = "\n".join(parent_comments)
-            flagged = self.ai.moderate(full_context)
+            if comment.body.startswith("!learn this"):
+                self.handle_learn_this(comment)
 
-            if not flagged:
+            else:
 
-                print("Conversation:")
-                print(full_context)
+                parent_comments = self.extract_context(comment)
+                full_context = "\n".join(parent_comments)
+                flagged = self.ai.moderate(full_context)
 
-                classification_result = self.ai.classify(comment.body, full_context)
+                if not flagged:
 
-                print("Classification Result:")
-                print(classification_result)
+                    print("Conversation:")
+                    print(full_context)
+
+                    classification_result = self.ai.classify(comment.body, full_context)
+
+                    print("Classification Result:")
+                    print(classification_result)
 
 
     def listen_to_posts(self):
